@@ -1,0 +1,14 @@
+{
+  "name": "mobile2screen-raspberry-kiosk-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "tv": "node open-tv.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

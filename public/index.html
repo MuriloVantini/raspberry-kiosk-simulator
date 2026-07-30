@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mobile2screen - TV</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main id="screen" class="screen screen--idle">
+      <section id="idle-content" class="idle-content">
+        <p class="brand">mobile2screen</p>
+        <h1>TV conectada</h1>
+        <p id="connection-status">Conectando ao simulador…</p>
+        <p id="clock" class="clock"></p>
+      </section>
+
+      <section id="alert-content" class="alert-content" hidden>
+        <p id="alert-type" class="alert-type"></p>
+        <h1 id="alert-title"></h1>
+        <p id="alert-message" class="alert-message"></p>
+        <p id="alert-duration" class="alert-duration"></p>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

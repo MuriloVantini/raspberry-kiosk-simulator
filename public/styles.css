@@ -1,0 +1,13 @@
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #0d1321; color: #f8fafc; }
+.screen { min-height: 100vh; display: grid; place-items: center; padding: 7vw; text-align: center; background: radial-gradient(circle at 50% 0%, #1d4ed8, #0d1321 58%); }
+.screen--info { background: radial-gradient(circle at 50% 0%, #0369a1, #0d1321 62%); }
+.screen--success { background: radial-gradient(circle at 50% 0%, #047857, #062c27 62%); }
+.screen--warning { background: radial-gradient(circle at 50% 0%, #b45309, #271403 62%); }
+.screen--critical { background: radial-gradient(circle at 50% 0%, #b91c1c, #2a0707 62%); }
+.brand, .alert-type { text-transform: uppercase; letter-spacing: .22em; font-weight: 700; opacity: .8; }
+h1 { margin: .2em 0; font-size: clamp(2.6rem, 8vw, 7rem); line-height: 1.03; }
+#connection-status, .alert-message { max-width: 58rem; font-size: clamp(1.2rem, 2.5vw, 2.5rem); line-height: 1.45; color: #dbeafe; }
+.clock { font-size: clamp(1.5rem, 3vw, 3rem); font-variant-numeric: tabular-nums; margin-top: 2rem; }
+.alert-duration { margin-top: 3rem; opacity: .75; font-size: 1.15rem; }
