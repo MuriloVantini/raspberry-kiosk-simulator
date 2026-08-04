@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conectar tela - mobile2screen</title>
+    <link rel="stylesheet" href="/pair.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card">
+        <p class="brand">mobile2screen</p>
+        <div id="expired" hidden><h1>QR Code expirado</h1><p>Leia novamente o QR Code exibido na TV.</p></div>
+        <form id="login-form">
+          <h1>Conectar uma tela</h1><p>Entre com sua conta para escolher um dispositivo.</p>
+          <label>E-mail<input name="email" type="email" autocomplete="email" required /></label>
+          <label>Senha<input name="password" type="password" autocomplete="current-password" required /></label>
+          <button type="submit">Entrar</button>
+        </form>
+        <form id="device-form" hidden>
+          <h1>Escolha o dispositivo</h1><p id="welcome"></p>
+          <label>Dispositivo<select id="device-select" required><option value="">Selecione...</option></select></label>
+          <button type="submit">Conectar nesta tela</button>
+        </form>
+        <div id="success" hidden><div class="success-mark">✓</div><h1>Tela conectada</h1><p id="success-message"></p><p>Você já pode fechar esta página.</p></div>
+        <p id="error" class="error" role="alert"></p>
+      </section>
+    </main>
+    <script type="module" src="/pair.js"></script>
+  </body>
+</html>

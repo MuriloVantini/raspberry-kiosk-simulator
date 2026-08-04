@@ -10,8 +10,13 @@
     <main id="screen" class="screen screen--idle">
       <section id="idle-content" class="idle-content">
         <p class="brand">mobile2screen</p>
-        <h1>TV conectada</h1>
-        <p id="connection-status">Conectando ao simulador…</p>
+        <div id="pairing-content" class="pairing-content">
+          <h1>Conecte esta tela</h1>
+          <img class="pairing-qr" src="/pairing-qr.svg" alt="QR Code para conectar esta tela" />
+          <p>Leia o QR Code com o celular, faça login e escolha o dispositivo.</p>
+        </div>
+        <h1 id="connected-title" hidden>TV conectada</h1>
+        <p id="connection-status">Aguardando pareamento…</p>
         <p id="clock" class="clock"></p>
       </section>
 

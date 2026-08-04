@@ -2,6 +2,9 @@ const screen = document.querySelector("#screen");
 const idleContent = document.querySelector("#idle-content");
 const alertContent = document.querySelector("#alert-content");
 const connectionStatus = document.querySelector("#connection-status");
+const pairingContent = document.querySelector("#pairing-content");
+const connectedTitle = document.querySelector("#connected-title");
+const pairingQr = document.querySelector(".pairing-qr");
 const clock = document.querySelector("#clock");
 const alertType = document.querySelector("#alert-type");
 const alertTitle = document.querySelector("#alert-title");
@@ -9,6 +12,11 @@ const alertMessage = document.querySelector("#alert-message");
 const alertDuration = document.querySelector("#alert-duration");
 
 let dismissTimer;
+
+function showPaired() {
+  pairingContent.hidden = true;
+  connectedTitle.hidden = false;
+}
 
 function updateClock() {
   clock.textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "medium" }).format(new Date());
@@ -47,11 +55,16 @@ function showAlert(delivery) {
 const events = new EventSource("/events");
 events.addEventListener("connection", ({ data }) => {
   const status = JSON.parse(data);
+  if (status.connected) showPaired();
   if (status.connected) {
     connectionStatus.textContent = "Conectada à API mobile2screen";
   } else if (status.lastError) {
     connectionStatus.textContent = `Aguardando conexão: ${status.lastError}`;
   }
+});
+events.addEventListener("paired", showPaired);
+events.addEventListener("pairing", () => {
+  pairingQr.src = `/pairing-qr.svg?t=${Date.now()}`;
 });
 events.addEventListener("alert", ({ data }) => showAlert(JSON.parse(data)));
 
