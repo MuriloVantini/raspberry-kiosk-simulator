@@ -30,7 +30,7 @@ npm run dev:server
 npm run dev
 ```
 
-O Vite fica disponível na rede pela porta `5173` e encaminha as chamadas da API local para a porta `3333`. Para validar a versão de produção, use `npm run build` e `npm start`.
+O Vite fica disponível na rede pela porta `3333` e encaminha as chamadas para o processo Node interno na porta `3334`. O `frontend-web` pode continuar usando a porta `5173`. Para validar a versão de produção, use `npm run build` e `npm start`; nesse modo, interface e servidor usam juntos a porta `3333`.
 
 O código Node está separado em:
 
