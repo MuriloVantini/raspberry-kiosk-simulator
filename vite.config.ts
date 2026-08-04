@@ -5,12 +5,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: "0.0.0.0",
-    port: 5173,
+    port: 3333,
+    strictPort: true,
     proxy: {
-      "/api": "http://localhost:3333",
-      "/events": "http://localhost:3333",
-      "/health": "http://localhost:3333",
-      "/pairing-qr.svg": "http://localhost:3333",
+      "/api": "http://localhost:3334",
+      "/events": "http://localhost:3334",
+      "/health": "http://localhost:3334",
+      "/pairing-qr.svg": "http://localhost:3334",
     },
   },
 });

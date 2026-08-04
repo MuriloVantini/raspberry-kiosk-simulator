@@ -35,12 +35,13 @@ export function findLanAddress() {
 export function createConfiguration(overrides = {}) {
   const env = { ...loadEnvironment(join(projectDirectory, ".env")), ...process.env, ...overrides };
   const port = positiveNumber(env.KIOSK_PORT, 3333);
+  const publicPort = positiveNumber(env.KIOSK_PUBLIC_PORT, port);
   const publicHost = env.KIOSK_PUBLIC_HOST || findLanAddress();
   return {
     apiBaseUrl: String(env.M2S_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, ""),
     assetDirectory: join(projectDirectory, "dist"),
     port,
-    publicBaseUrl: String(env.KIOSK_PUBLIC_URL || `http://${publicHost}:${port}`).replace(/\/$/, ""),
+    publicBaseUrl: String(env.KIOSK_PUBLIC_URL || `http://${publicHost}:${publicPort}`).replace(/\/$/, ""),
     pollIntervalMs: positiveNumber(env.POLL_INTERVAL_MS, 3000),
     heartbeatIntervalMs: positiveNumber(env.HEARTBEAT_INTERVAL_MS, 15000),
   };
