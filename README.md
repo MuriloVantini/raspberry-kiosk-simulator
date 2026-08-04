@@ -1,6 +1,6 @@
 # Simulador de Raspberry Pi / TV kiosk
 
-Este projeto representa o player executado em um Raspberry Pi conectado a uma TV. Ele abre uma tela em modo kiosk, mantém o dispositivo online por heartbeat e busca novos alertas no backend `mobile2screen`.
+Aplicação React que representa o player executado em um Raspberry Pi conectado a uma TV. A interface segue a identidade visual do `frontend-web`, abre em modo kiosk, mantém o dispositivo online por heartbeat e busca novos alertas no backend `mobile2screen`.
 
 ## Preparação
 
@@ -17,9 +17,27 @@ Copy-Item .env.example .env
 npm run tv
 ```
 
-O comando inicia o servidor em `0.0.0.0`, detecta o IP da rede local e abre uma janela isolada do Microsoft Edge. Leia o QR Code exibido, faça login pelo celular e selecione o dispositivo no dropdown. O `id` e o `connection_token` são mantidos somente em memória pelo kiosk.
+O comando gera o build React, inicia o servidor em `0.0.0.0`, detecta o IP da rede local e abre uma janela isolada do Microsoft Edge. Leia o QR Code exibido, faça login pelo celular e selecione o dispositivo no dropdown. O `id` e o `connection_token` são mantidos somente em memória pelo kiosk.
 
-Para sair do kiosk, pressione `Alt + F4`. Para desenvolvimento com reinício automático, execute `npm run dev` e acesse a porta 3333 pela rede.
+Para sair do kiosk, pressione `Alt + F4`.
+
+## Desenvolvimento
+
+Execute o backend do kiosk e o Vite em terminais separados:
+
+```powershell
+npm run dev:server
+npm run dev
+```
+
+O Vite fica disponível na rede pela porta `5173` e encaminha as chamadas da API local para a porta `3333`. Para validar a versão de produção, use `npm run build` e `npm start`.
+
+O código Node está separado em:
+
+- `server/config.mjs`: ambiente, porta e descoberta do IP local;
+- `server/kiosk-service.mjs`: pareamento, backend, heartbeat e alertas;
+- `server/app-server.mjs`: rotas HTTP e QR Code;
+- `server/http.mjs`: leitura de payload, respostas e arquivos do React.
 
 O simulador disponibiliza:
 
