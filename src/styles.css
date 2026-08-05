@@ -94,6 +94,26 @@ select {
   z-index: 2;
 }
 
+.animated-logo {
+  width: clamp(13rem, 16vw, 17rem);
+  line-height: 0;
+}
+
+.animated-logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.animated-logo--compact {
+  width: clamp(12rem, 14vw, 15rem);
+}
+
+[data-tv-motion] {
+  opacity: 0;
+}
+
 .pair-page {
   position: relative;
   min-height: 100vh;
@@ -713,9 +733,22 @@ select {
   opacity: .65;
 }
 
+.kiosk-alert__logo {
+  position: absolute;
+  top: 2.5rem;
+  left: 3rem;
+  z-index: 2;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-tv-motion] {
+    opacity: 1;
   }
 }
 
