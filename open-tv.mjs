@@ -37,7 +37,7 @@ if (!(await serverIsReady())) {
   await waitForServer();
 }
 
-const browser = spawn(edgePath, ["--kiosk", "--edge-kiosk-type=fullscreen", "--no-first-run", `--user-data-dir=${join(tmpdir(), "mobile2screen-edge-kiosk")}`, configuration.publicBaseUrl], { detached: true, stdio: "ignore" });
+const browser = spawn(edgePath, ["--kiosk", "--edge-kiosk-type=fullscreen", "--autoplay-policy=no-user-gesture-required", "--no-first-run", `--user-data-dir=${join(tmpdir(), "mobile2screen-edge-kiosk")}`, configuration.publicBaseUrl], { detached: true, stdio: "ignore" });
 browser.unref();
 console.log(`TV aberta no Microsoft Edge: ${configuration.publicBaseUrl}`);
 

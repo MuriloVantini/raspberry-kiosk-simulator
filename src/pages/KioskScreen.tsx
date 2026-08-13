@@ -3,6 +3,7 @@ import { CheckCircle2, MonitorUp, ShieldCheck, Smartphone } from "lucide-react";
 import { AnimatedLogo } from "../components/AnimatedLogo";
 import { useTvEntranceAnimation } from "../hooks/useTvEntranceAnimation";
 import { completeAlert } from "../lib/api";
+import { playAlertSound } from "../lib/alertSound";
 import type { ConnectionState, Delivery } from "../types";
 
 function formatClock(date: Date) {
@@ -33,12 +34,16 @@ export function KioskScreen() {
 
   useEffect(() => {
     if (!delivery) return;
+    const stopSound = playAlertSound(delivery.alert?.type);
     const duration = Number(delivery.alert?.duration_seconds) || 10;
     const timer = window.setTimeout(async () => {
       await completeAlert().catch(() => undefined);
       setDelivery(null);
     }, duration * 1000);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      stopSound();
+    };
   }, [delivery]);
 
   if (delivery) {
