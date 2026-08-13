@@ -44,7 +44,7 @@ export function KioskScreen() {
   if (delivery) {
     const alert = delivery.alert || {};
     return (
-      <main className={`kiosk-alert kiosk-alert--${alert.type || "info"}`}>
+      <main ref={homeMotionRef} className={`kiosk-alert kiosk-alert--${alert.type || "info"}`}>
         <div className="kiosk-alert__logo">
           <AnimatedLogo isDarkMode compact />
         </div>
