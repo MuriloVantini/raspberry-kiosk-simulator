@@ -42,7 +42,7 @@ export function createConfiguration(overrides = {}) {
     assetDirectory: join(projectDirectory, "dist"),
     port,
     publicBaseUrl: String(env.KIOSK_PUBLIC_URL || `http://${publicHost}:${publicPort}`).replace(/\/$/, ""),
-    pollIntervalMs: positiveNumber(env.POLL_INTERVAL_MS, 3000),
+    recoveryPollIntervalMs: positiveNumber(env.REALTIME_RECOVERY_INTERVAL_MS, 60_000),
     heartbeatIntervalMs: positiveNumber(env.HEARTBEAT_INTERVAL_MS, 15000),
   };
 }

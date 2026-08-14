@@ -12,4 +12,5 @@ server.listen(configuration.port, "0.0.0.0", () => {
 });
 
 setInterval(() => kiosk.heartbeat(), configuration.heartbeatIntervalMs).unref();
-setInterval(() => kiosk.pollDeliveries(), configuration.pollIntervalMs).unref();
+// Recupera uma eventual notificação perdida; novas entregas chegam imediatamente pelo Reverb.
+setInterval(() => kiosk.pollDeliveries(), configuration.recoveryPollIntervalMs).unref();

@@ -1,13 +1,16 @@
 import { randomBytes } from "node:crypto";
+import Pusher from "pusher-js";
 
 export class KioskService {
   constructor(configuration) {
     this.configuration = configuration;
     this.credentials = { deviceId: "", deviceToken: "" };
-    this.connection = { connected: false, lastHeartbeatAt: null, lastError: null };
+    this.connection = { connected: false, realtimeConnected: false, lastHeartbeatAt: null, lastError: null };
     this.currentDeliveryId = null;
     this.eventClients = new Set();
     this.pairing = this.createPairingSession();
+    this.pusher = null;
+    this.realtimeChannel = null;
   }
 
   createPairingSession() { return { token: randomBytes(24).toString("hex"), authToken: null, user: null }; }
@@ -99,9 +102,70 @@ export class KioskService {
   async connectDevice() {
     const payload = await this.callDeviceApi(`/api/kiosk/devices/${this.credentials.deviceId}/connect`, { method: "POST", body: JSON.stringify({ simulator: true, screen: "kiosk" }) });
     const device = this.toPublicDevice(payload.data);
-    this.connection = { connected: true, lastHeartbeatAt: new Date().toISOString(), lastError: null, device };
+    this.connection = { connected: true, realtimeConnected: false, lastHeartbeatAt: new Date().toISOString(), lastError: null, device };
+    this.connectRealtime(payload.data?.websocket);
     this.publish("connection", this.connection);
     return device;
+  }
+
+  connectRealtime(configuration) {
+    this.disconnectRealtime();
+
+    if (!configuration?.key || !configuration?.host || !configuration?.channel) {
+      this.connection = { ...this.connection, realtimeConnected: false, lastError: "Configuração do Reverb ausente na API." };
+      this.publish("connection", this.connection);
+      return;
+    }
+
+    const useTLS = configuration.scheme === "https";
+    const port = Number(configuration.port) || (useTLS ? 443 : 80);
+    this.pusher = new Pusher(configuration.key, {
+      cluster: "mt1",
+      wsHost: configuration.host,
+      wsPort: port,
+      wssPort: port,
+      forceTLS: useTLS,
+      enabledTransports: [useTLS ? "wss" : "ws"],
+      enableStats: false,
+      channelAuthorization: {
+        endpoint: "unused",
+        transport: "ajax",
+        customHandler: (params, callback) => {
+          this.callDeviceApi(`/api/kiosk/devices/${this.credentials.deviceId}/broadcasting/auth`, {
+            method: "POST",
+            body: JSON.stringify({ socket_id: params.socketId, channel_name: params.channelName }),
+          }).then((authorization) => callback(null, authorization))
+            .catch((error) => callback(error, null));
+        },
+      },
+    });
+
+    this.pusher.connection.bind("connected", () => {
+      this.connection = { ...this.connection, realtimeConnected: true, lastError: null };
+      this.publish("connection", this.connection);
+    });
+    this.pusher.connection.bind("disconnected", () => {
+      this.connection = { ...this.connection, realtimeConnected: false };
+      this.publish("connection", this.connection);
+    });
+    this.pusher.connection.bind("error", (error) => {
+      this.connection = { ...this.connection, realtimeConnected: false, lastError: error?.error?.data?.message ?? "Falha na conexão com o Reverb." };
+      this.publish("connection", this.connection);
+    });
+
+    this.realtimeChannel = this.pusher.subscribe(configuration.channel);
+    this.realtimeChannel.bind("pusher:subscription_succeeded", () => { void this.pollDeliveries(); });
+    this.realtimeChannel.bind("pusher:subscription_error", () => {
+      this.connection = { ...this.connection, realtimeConnected: false, lastError: "O Reverb recusou o canal privado do dispositivo." };
+      this.publish("connection", this.connection);
+    });
+    this.realtimeChannel.bind("alert.available", () => { void this.pollDeliveries(); });
+  }
+
+  disconnectRealtime() {
+    if (this.pusher) this.pusher.disconnect();
+    this.pusher = null;
+    this.realtimeChannel = null;
   }
 
   toPublicDevice(device = {}) {
@@ -141,5 +205,6 @@ export class KioskService {
     if (this.currentDeliveryId === null) throw new Error("Nenhum alerta está em exibição.");
     await this.setDeliveryStatus(this.currentDeliveryId, "dismissed");
     this.currentDeliveryId = null;
+    setTimeout(() => { void this.pollDeliveries(); }, 100).unref();
   }
 }
