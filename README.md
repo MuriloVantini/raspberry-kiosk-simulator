@@ -32,6 +32,8 @@ npm run dev
 
 O Vite fica disponível na rede pela porta `3333` e encaminha as chamadas para o processo Node interno na porta `3334`. O `frontend-web` pode continuar usando a porta `5173`. Para validar a versão de produção, use `npm run build` e `npm start`; nesse modo, interface e servidor usam juntos a porta `3333`.
 
+O servidor Node mantém uma conexão WebSocket privada com o Laravel Reverb. Ao receber `alert.available`, ele busca o conteúdo pela API autenticada e o entrega à interface React pelo stream SSE local. Mantenha `php artisan reverb:start` em execução no backend.
+
 O código Node está separado em:
 
 - `server/config.mjs`: ambiente, porta e descoberta do IP local;
