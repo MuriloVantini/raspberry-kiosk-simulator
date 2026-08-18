@@ -4,6 +4,8 @@ export interface Device {
   type?: string;
   location?: string;
   is_online?: boolean;
+  profile_name?: string | null;
+  profile_image_url?: string | null;
 }
 
 export interface Delivery {

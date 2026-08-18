@@ -12,6 +12,7 @@ export default defineConfig({
       "/events": "http://localhost:3334",
       "/health": "http://localhost:3334",
       "/pairing-qr.svg": "http://localhost:3334",
+      "/profile-image": "http://localhost:3334",
     },
   },
 });

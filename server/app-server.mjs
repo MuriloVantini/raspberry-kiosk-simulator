@@ -23,6 +23,14 @@ export function createKioskServer(configuration, kiosk) {
       } catch (error) { return sendJson(response, 500, { message: error.message }); }
     }
 
+    if (url.pathname === "/profile-image" && request.method === "GET") {
+      try {
+        const image = await kiosk.fetchProfileImage();
+        response.writeHead(200, { "Content-Type": image.contentType, "Cache-Control": "no-store" });
+        return response.end(image.body);
+      } catch (error) { return sendJson(response, 404, { message: error.message }); }
+    }
+
     if (url.pathname === "/api/pair/login" && request.method === "POST") {
       try { const body = await readJson(request); return sendJson(response, 200, await kiosk.login(body.session, body.email, body.password)); }
       catch (error) { return sendJson(response, 401, { message: error.message }); }

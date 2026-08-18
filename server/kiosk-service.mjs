@@ -91,9 +91,9 @@ export class KioskService {
     const device = payload.data;
     if (!device?.id || !device?.connection_token) throw new Error("Dispositivo inválido ou sem token de conexão.");
     this.credentials = { deviceId: String(device.id), deviceToken: device.connection_token };
-    await this.connectDevice();
+    const connectedDevice = await this.connectDevice();
     await this.revokePairingAuth();
-    const selected = { id: device.id, name: device.name };
+    const selected = connectedDevice;
     this.pairing = this.createPairingSession();
     this.publish("paired", { device: selected });
     return selected;
@@ -169,15 +169,38 @@ export class KioskService {
   }
 
   toPublicDevice(device = {}) {
-    const { id, name, type, location, is_online } = device;
-    return { id, name, type, location, is_online };
+    const { id, name, type, location, is_online, profile_name, profile_image_url } = device;
+    return { id, name, type, location, is_online, profile_name, profile_image_url };
+  }
+
+  async fetchProfileImage() {
+    const source = this.connection.device?.profile_image_url;
+    if (!source) throw new Error("Foto de perfil não configurada.");
+
+    const sourceUrl = new URL(source);
+    const apiUrl = new URL(`${sourceUrl.pathname}${sourceUrl.search}`, `${this.configuration.apiBaseUrl}/`);
+    const upstream = await fetch(apiUrl, { headers: { Accept: "image/jpeg,image/png,image/webp" } });
+    if (!upstream.ok) throw new Error(`A API não conseguiu carregar a foto (${upstream.status}).`);
+
+    const contentType = upstream.headers.get("content-type") ?? "application/octet-stream";
+    if (!contentType.startsWith("image/")) throw new Error("A API retornou um arquivo inválido para a foto de perfil.");
+
+    return { contentType, body: Buffer.from(await upstream.arrayBuffer()) };
   }
 
   async heartbeat() {
     if (!this.isConfigured()) return;
     try {
-      await this.callDeviceApi(`/api/kiosk/devices/${this.credentials.deviceId}/heartbeat`, { method: "POST", body: JSON.stringify({ metadata: { simulator: true, screen: "kiosk", local_port: this.configuration.port } }) });
-      this.connection = { ...this.connection, connected: true, lastHeartbeatAt: new Date().toISOString(), lastError: null };
+      const payload = await this.callDeviceApi(`/api/kiosk/devices/${this.credentials.deviceId}/heartbeat`, { method: "POST", body: JSON.stringify({ metadata: { simulator: true, screen: "kiosk", local_port: this.configuration.port } }) });
+      this.connection = {
+        ...this.connection,
+        connected: true,
+        lastHeartbeatAt: new Date().toISOString(),
+        lastError: null,
+        device: this.connection.device
+          ? { ...this.connection.device, ...payload.data }
+          : this.connection.device,
+      };
     } catch (error) { this.connection = { ...this.connection, connected: false, lastError: error.message }; }
     this.publish("connection", this.connection);
   }

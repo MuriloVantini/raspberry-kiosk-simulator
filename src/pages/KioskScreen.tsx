@@ -18,6 +18,22 @@ function textLengthModifier(value: string, longAt: number, veryLongAt: number) {
   return "";
 }
 
+function ProfileBrand({ connection, alert = false, profileOnly = false }: { connection: ConnectionState; alert?: boolean; profileOnly?: boolean }) {
+  const profileName = connection.device?.profile_name || "Usuário Mobile2Screen";
+  const initials = profileName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "US";
+
+  return (
+    <div className={alert ? "kiosk-alert__brand" : `kiosk-brand${profileOnly ? " kiosk-brand--profile-only" : ""}`} data-tv-motion>
+      {!profileOnly && <AnimatedLogo isDarkMode compact={alert} />}
+      <div className="kiosk-profile-image" title={profileName}>
+        {connection.device?.profile_image_url
+          ? <img src={`/profile-image?v=${encodeURIComponent(connection.device.profile_image_url)}`} alt={`Foto de ${profileName}`} />
+          : <span aria-label={`Iniciais de ${profileName}`}>{initials}</span>}
+      </div>
+    </div>
+  );
+}
+
 export function KioskScreen() {
   const [connection, setConnection] = useState<ConnectionState>({ connected: false });
   const [delivery, setDelivery] = useState<Delivery | null>(null);
@@ -60,9 +76,7 @@ export function KioskScreen() {
     const message = alert.message || "";
     return (
       <main ref={homeMotionRef} className={`kiosk-alert kiosk-alert--${alert.type || "info"}`}>
-        <div className="kiosk-alert__logo">
-          <AnimatedLogo isDarkMode compact />
-        </div>
+        <ProfileBrand connection={connection} alert />
         <div className="kiosk-alert__content"><span data-tv-motion>{alert.type || "informação"}</span>
           <h1 className={textLengthModifier(title, 42, 80)} data-tv-motion>{title}</h1>
           {message && <p className={textLengthModifier(message, 180, 320)} data-tv-motion>{message}</p>}
@@ -77,7 +91,7 @@ export function KioskScreen() {
   return (
     <main ref={homeMotionRef} className="kiosk-home">
       <header className="kiosk-header">
-        <AnimatedLogo isDarkMode />
+        <ProfileBrand connection={connection} profileOnly />
         <div className={`connection-pill ${connection.connected ? "online" : ""}`} data-tv-motion>
           <span />{connection.connected ? "Tela online" : "Aguardando conexão"}
         </div>
