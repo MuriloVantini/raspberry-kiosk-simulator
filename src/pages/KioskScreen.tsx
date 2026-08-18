@@ -10,6 +10,14 @@ function formatClock(date: Date) {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "medium" }).format(date);
 }
 
+function textLengthModifier(value: string, longAt: number, veryLongAt: number) {
+  const length = value.trim().length;
+
+  if (length >= veryLongAt) return "text-fit--very-long";
+  if (length >= longAt) return "text-fit--long";
+  return "";
+}
+
 export function KioskScreen() {
   const [connection, setConnection] = useState<ConnectionState>({ connected: false });
   const [delivery, setDelivery] = useState<Delivery | null>(null);
@@ -48,14 +56,16 @@ export function KioskScreen() {
 
   if (delivery) {
     const alert = delivery.alert || {};
+    const title = alert.title || "Novo alerta";
+    const message = alert.message || "";
     return (
       <main ref={homeMotionRef} className={`kiosk-alert kiosk-alert--${alert.type || "info"}`}>
         <div className="kiosk-alert__logo">
           <AnimatedLogo isDarkMode compact />
         </div>
         <div className="kiosk-alert__content"><span data-tv-motion>{alert.type || "informação"}</span>
-          <h1 data-tv-motion>{alert.title || "Novo alerta"}
-          </h1><p data-tv-motion>{alert.message}</p>
+          <h1 className={textLengthModifier(title, 42, 80)} data-tv-motion>{title}</h1>
+          {message && <p className={textLengthModifier(message, 180, 320)} data-tv-motion>{message}</p>}
         </div>
         <div className="kiosk-alert__duration" data-tv-motion>
           Exibindo por {Number(alert.duration_seconds) || 10} segundos
@@ -79,7 +89,10 @@ export function KioskScreen() {
               <CheckCircle2 />
             </span>
             <p className="eyebrow" data-tv-motion>Pareamento concluído</p>
-            <h1 data-tv-motion>
+            <h1
+              className={textLengthModifier(connection.device?.name || "TV conectada", 28, 52)}
+              data-tv-motion
+            >
               {connection.device?.name || "TV conectada"}
             </h1>
             <p data-tv-motion>Esta tela está pronta para receber alertas do Mobile2Screen.</p>
