@@ -20,16 +20,18 @@ function textLengthModifier(value: string, longAt: number, veryLongAt: number) {
 
 function ProfileBrand({ connection, alert = false, profileOnly = false }: { connection: ConnectionState; alert?: boolean; profileOnly?: boolean }) {
   const profileName = connection.device?.profile_name || "Usuário Mobile2Screen";
-  const initials = profileName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "US";
+  const profileImageUrl = connection.device?.profile_image_url;
+
+  if (profileOnly && !profileImageUrl) return null;
 
   return (
     <div className={alert ? "kiosk-alert__brand" : `kiosk-brand${profileOnly ? " kiosk-brand--profile-only" : ""}`} data-tv-motion>
       {!profileOnly && <AnimatedLogo isDarkMode compact={alert} />}
-      <div className="kiosk-profile-image" title={profileName}>
-        {connection.device?.profile_image_url
-          ? <img src={`/profile-image?v=${encodeURIComponent(connection.device.profile_image_url)}`} alt={`Foto de ${profileName}`} />
-          : <span aria-label={`Iniciais de ${profileName}`}>{initials}</span>}
-      </div>
+      {profileImageUrl && (
+        <div className="kiosk-profile-image" title={profileName}>
+          <img src={`/profile-image?v=${encodeURIComponent(profileImageUrl)}`} alt={`Foto de ${profileName}`} />
+        </div>
+      )}
     </div>
   );
 }
