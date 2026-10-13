@@ -792,7 +792,7 @@ select {
   overflow: hidden;
   overflow-wrap: anywhere;
   font-size: clamp(2.5rem, 7vmin, 8rem);
-  line-height: .95;
+  line-height: 1.28;
   letter-spacing: -.05em;
   word-break: break-word;
   -webkit-box-orient: vertical;
